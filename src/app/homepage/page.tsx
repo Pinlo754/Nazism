@@ -1,8 +1,8 @@
+import HomePageView from "@/views/HomeView"
+
 const Homepage = () => {
     return (
-        <div className="p-4">
-            Homepage
-        </div>
+        <HomePageView/>
     )
 }
 
