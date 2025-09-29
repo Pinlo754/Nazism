@@ -1,7 +1,9 @@
-import ReferencesView from "@/views/ReferencesView";
+import ReferencesPageView from "@/views/ReferencesView"
 
-const ReferencesPage = () => {
-  return <ReferencesView />;
-};
+const Homepage = () => {
+    return (
+        <ReferencesPageView/>
+    )
+}
 
-export default ReferencesPage;
+export default Homepage

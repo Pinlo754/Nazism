@@ -1,7 +1,6 @@
-import AtrocitiesView from "@/views/AtrocitiesView";
+import AtrocitiesPageView from "@/views/AtrocitiesView";
 
 const AtrocitiesPage = () => {
-  return <AtrocitiesView />;
-};
-
+  return <AtrocitiesPageView/>;
+}
 export default AtrocitiesPage;

@@ -1,7 +1,6 @@
-import HistoryView from "@/views/HistoryView";
+import HistoryPageView from "@/views/HistoryView";
 
 const HistoryPage = () => {
-  return <HistoryView />;
-};
-
+  return <HistoryPageView/>;
+}  
 export default HistoryPage;

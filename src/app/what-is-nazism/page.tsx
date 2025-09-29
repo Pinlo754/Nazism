@@ -1,7 +1,9 @@
-import WhatIsNazismView from "@/views/WhatIsNazismView";
+import WhatIsNazismPageView from "@/views/WhatIsNazismView"
 
-const WhatIsNazismPage = () => {
-  return <WhatIsNazismView />;
-};
+const Homepage = () => {
+    return (
+        <WhatIsNazismPageView/>
+    )
+}
 
-export default WhatIsNazismPage;
+export default Homepage
