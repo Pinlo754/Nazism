@@ -1,10 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useStatistics } from "@/lib/data-fetcher"
-import { AlertTriangle, Users, MapPin } from "lucide-react"
+import { AlertTriangle, MapPin, Camera } from "lucide-react"
+import InteractiveCampsMap from "@/components/interactive-camps-map"
+import HolocaustGallery from "@/components/holocaust-gallery"
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -20,88 +23,109 @@ export default function AtrocitiesPageView() {
   const { data: statistics, isLoading } = useStatistics()
 
   return (
-    <div className="container mx-auto px-4 py-16 space-y-20">
-      {/* Hero */}
-      <motion.section
-        initial="hidden"
-        animate="show"
-        variants={fadeUp}
-        transition={{ duration: 0.8 }}
-        className="text-center max-w-3xl mx-auto"
-      >
-        <h1 className="text-4xl md:text-5xl font-bold mb-6">
-          Tội ác và Hậu quả
-        </h1>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Một cái nhìn toàn diện về những tội ác khủng khiếp nhất của thế kỷ 20
-          và bài học nhân loại phải ghi nhớ.
-        </p>
-      </motion.section>
+    <div className="min-h-screen">
+      {/* Hero Section with Background */}
+      <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+        {/* Background Image */}
+        <Image 
+          src="https://www.nationalww2museum.org/sites/default/files/styles/wide_medium/public/2017-06/holocaust-066.jpg?h=6ff83b63"
+          alt="Historical background"
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+        />
+        
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-black/60 z-10" />
+           
+        {/* Content Container */}
+        <div className="relative z-20 container mx-auto px-4 py-16 space-y-20">
+          {/* Hero */}
+          <motion.section
+            initial="hidden"
+            animate="show"
+            variants={fadeUp}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-3xl mx-auto pt-20"
+          >
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+              Tội ác và Hậu quả
+            </h1>
+            <p className="text-lg md:text-xl text-slate-200 leading-relaxed">
+              Một cái nhìn toàn diện về những tội ác khủng khiếp nhất của thế kỷ 20
+              và bài học nhân loại phải ghi nhớ.
+            </p>
+          </motion.section>
 
-      {/* Alert */}
-      <motion.div
-        initial="hidden"
-        animate="show"
-        variants={fadeIn}
-        transition={{ delay: 0.4 }}
-      >
-        <Alert className="mb-8 border-destructive/20 bg-destructive/5 shadow-md">
-          <AlertTriangle className="h-4 w-4 text-destructive" />
-          <AlertTitle className="text-destructive">
-            Cảnh báo nội dung nghiêm trọng
-          </AlertTitle>
-          <AlertDescription>
-            Phần này chứa thông tin chi tiết về các tội ác chống lại nhân loại.
-            Nội dung có thể gây khó chịu nhưng cần thiết để hiểu rõ về lịch sử.
-          </AlertDescription>
-        </Alert>
-      </motion.div>
+          {/* Alert */}
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={fadeIn}
+            transition={{ delay: 0.4 }}
+          >
+            <Alert className="mb-8 border-destructive/30 bg-destructive/10 backdrop-blur-sm shadow-xl">
+              <AlertTriangle className="h-4 w-4 text-red-400" />
+              <AlertTitle className="text-red-400">
+                Cảnh báo nội dung nghiêm trọng
+              </AlertTitle>
+              <AlertDescription className="text-slate-200">
+                Phần này chứa thông tin chi tiết về các tội ác chống lại nhân loại.
+                Nội dung có thể gây khó chịu nhưng cần thiết để hiểu rõ về lịch sử.
+              </AlertDescription>
+            </Alert>
+          </motion.div>
 
-      {/* Stats */}
-      {!isLoading && statistics && (
-        <motion.section
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {[
-            {
-              title: `${(statistics.jewishVictims / 1e6).toFixed(0)} triệu`,
-              desc: "Người Do Thái bị sát hại",
-            },
-            {
-              title: `${(statistics.holocaustVictims / 1e6).toFixed(0)} triệu`,
-              desc: "Tổng nạn nhân Holocaust",
-            },
-            {
-              title: `${statistics.concentrationCamps}+`,
-              desc: "Trại tập trung & diệt chủng",
-            },
-            {
-              title: `${(statistics.ww2Deaths / 1e6).toFixed(0)} triệu`,
-              desc: "Tổng số chết trong WWII",
-            },
-          ].map((s, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUp}
-              transition={{ delay: i * 0.2 }}
+          {/* Stats */}
+          {!isLoading && statistics && (
+            <motion.section
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 pb-20"
             >
-              <Card className="border-destructive/20 text-center hover:shadow-md transition">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-destructive">
-                    {s.title}
-                  </CardTitle>
-                  <CardDescription>{s.desc}</CardDescription>
-                </CardHeader>
-              </Card>
-            </motion.div>
-          ))}
-        </motion.section>
-      )}
+              {[
+                {
+                  title: `${(statistics.jewishVictims / 1e6).toFixed(0)} triệu`,
+                  desc: "Người Do Thái bị sát hại",
+                },
+                {
+                  title: `${(statistics.holocaustVictims / 1e6).toFixed(0)} triệu`,
+                  desc: "Tổng nạn nhân Holocaust",
+                },
+                {
+                  title: `${statistics.concentrationCamps}+`,
+                  desc: "Trại tập trung & diệt chủng",
+                },
+                {
+                  title: `${(statistics.ww2Deaths / 1e6).toFixed(0)} triệu`,
+                  desc: "Tổng số chết trong WWII",
+                },
+              ].map((s, i) => (
+                <motion.div
+                  key={i}
+                  variants={fadeUp}
+                  transition={{ delay: i * 0.2 }}
+                >
+                  <Card className="border-slate-700/50 bg-slate-800/30 backdrop-blur-sm text-center hover:shadow-xl transition-all duration-300 hover:bg-slate-700/40">
+                    <CardHeader>
+                      <CardTitle className="text-2xl text-red-400">
+                        {s.title}
+                      </CardTitle>
+                      <CardDescription className="text-slate-300">{s.desc}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.section>
+          )}
+        </div>
+      </div>
 
-      {/* Victim Groups */}
+      {/* Content Section - White Background */}
+      <div className="bg-background">
+        <div className="container mx-auto px-4 py-16 space-y-20">
       <motion.section
         initial="hidden"
         whileInView="show"
@@ -165,29 +189,23 @@ export default function AtrocitiesPageView() {
         transition={{ duration: 0.8 }}
       >
         <h2 className="text-2xl font-semibold mb-8 flex items-center gap-2">
-          <MapPin className="h-6 w-6" /> Các trại diệt chủng chính
+          <MapPin className="h-6 w-6" /> Bản đồ các trại tập trung chính
         </h2>
-        <div className="relative border-l-2 border-destructive/40 pl-6 space-y-8">
-          {[
-            {
-              title: "Auschwitz-Birkenau (Ba Lan)",
-              desc: "Trại diệt chủng lớn nhất, khoảng 1.1 triệu nạn nhân.",
-            },
-            {
-              title: "Treblinka (Ba Lan)",
-              desc: "Trại diệt chủng thuần túy, 800k - 900k nạn nhân.",
-            },
-            {
-              title: "Sobibor (Ba Lan)",
-              desc: "Một phần Aktion Reinhard, khoảng 250k nạn nhân.",
-            },
-          ].map((c, i) => (
-            <motion.div key={i} variants={fadeUp} transition={{ delay: i * 0.2 }}>
-              <h3 className="font-semibold">{c.title}</h3>
-              <p className="text-sm text-muted-foreground">{c.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+        <InteractiveCampsMap />
+      </motion.section>
+
+      {/* Historical Gallery */}
+      <motion.section
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true }}
+        variants={fadeUp}
+        transition={{ duration: 0.8 }}
+      >
+        <h2 className="text-2xl font-semibold mb-8 flex items-center gap-2">
+          <Camera className="h-6 w-6" /> Thư viện hình ảnh lịch sử
+        </h2>
+        <HolocaustGallery />
       </motion.section>
 
       {/* Global Impact */}
@@ -204,12 +222,14 @@ export default function AtrocitiesPageView() {
         </h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li>Thành lập Liên Hợp Quốc & Tuyên ngôn Nhân quyền</li>
-          <li>Khái niệm "tội ác chống lại nhân loại" & "diệt chủng"</li>
+          <li>Khái niệm &ldquo;tội ác chống lại nhân loại&rdquo; & &ldquo;diệt chủng&rdquo;</li>
           <li>Các phiên tòa Nuremberg - tiền lệ công lý quốc tế</li>
           <li>Thành lập nhà nước Israel</li>
-          <li>Cam kết "Never Again"</li>
+          <li>Cam kết &ldquo;Never Again&rdquo;</li>
         </ul>
       </motion.section>
+        </div>
+      </div>
     </div>
   )
 }

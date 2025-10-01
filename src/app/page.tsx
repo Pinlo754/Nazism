@@ -1,7 +1,11 @@
 import HomePageView from "@/views/HomeView";
+import ImageTest from "@/components/image-test";
 
 export default function Home() {
   return (
-    <HomePageView/>
+    <div>
+      <ImageTest />
+      <HomePageView/>
+    </div>
   );
 }
