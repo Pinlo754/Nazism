@@ -12,6 +12,8 @@ const navigation = [
   { name: "Tội ác & Hậu quả", href: "/atrocities" },
   { name: "Phân tích & Phê phán", href: "/Analysis" },
   { name: "Tài liệu tham khảo", href: "/references" },
+  { name: "Trò chơi trí nhớ", href: "/memory-game" },
+  { name: "Trò chơi mốc thời gian", href: "/timeline-escape" },
 ]
 
 const Navbar = () => {
@@ -31,7 +33,7 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
               >
                 {item.name}
               </Link>

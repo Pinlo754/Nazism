@@ -1,280 +1,318 @@
 "use client"
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
+import { useTimeline } from "@/lib/data-fetcher"
+import { Calendar, Clock, ChevronDown, ChevronRight, X } from "lucide-react"
 import { motion } from "framer-motion"
+import { fadeInUp } from "@/lib/variants"
+import VideoHeader from "@/components/video-header"
 import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertTriangle, Eye, Shield, BookOpen, BarChart2, Users, Globe, Scale, Brain, ExternalLink } from "lucide-react"
-import { fadeIn } from "@/lib/variants";
+import { useState } from "react"
 
-// Placeholder images - replace with your actual image paths
-const IMAGES = {
-  hero: "/images/analysis/hero-bg.jpg",
-  propaganda: "/images/analysis/propaganda.jpg",
-  rise: "/images/analysis/rise-to-power.jpg",
-  modern: "/images/analysis/modern-extremism.jpg",
-  timeline: "/images/analysis/historical-timeline.jpg"
-};
+//
+// Type định nghĩa dữ liệu Timeline
+//
+export interface SubEvent {
+  date?: string
+  title?: string
+  description?: string
+  image?: string
+}
 
-const riskFactors = [
-  {
-    title: "Bối cảnh lịch sử",
-    description: "Đức sau Thế chiến I với Hiệp ước Versailles khắc nghiệt, siêu lạm phát năm 1923, và Đại suy thoái 1929 tạo mảnh đất màu mỡ cho chủ nghĩa cực đoan.",
-    icon: <BookOpen className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Tâm lý đám đông",
-    description: "Sử dụng tâm lý đám đông, tạo kẻ thù chung và hứa hẹn phục hồi vị thế dân tộc.",
-    icon: <Users className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Tuyên truyền hiệu quả",
-    description: "Bộ máy tuyên truyền của Joseph Goebbels kiểm soát toàn bộ thông tin đại chúng.",
-    icon: <Globe className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Đàn áp đối lập",
-    description: "Thiết lập nhà nước cảnh sát, xóa bỏ các quyền tự do dân sự và đàn áp bất đồng chính kiến.",
-    icon: <Shield className="h-5 w-5 text-primary" />
-  }
-];
+export interface TimelineEventData {
+  year: number
+  title?: string
+  event: string
+  description?: string
+  image?: string
+  subEvents?: SubEvent[]
+}
 
-const modernManifestations = [
-  {
-    title: "Chủ nghĩa dân tộc cực đoan",
-    description: "Bài ngoại và bài nhập cư dưới danh nghĩa bảo vệ bản sắc dân tộc.",
-    examples: "Các phong trào cực hữu ở châu Âu, chủ nghĩa da trắng thượng đẳng."
-  },
-  {
-    title: "Thuyết âm mưu",
-    description: "Phổ biến các thuyết âm mưu về kiểm soát toàn cầu, phủ nhận Holocaust.",
-    examples: "QAnon, các nhóm phủ nhận tội ác diệt chủng."
-  },
-  {
-    title: "Bạo lực chính trị",
-    description: "Sử dụng bạo lực nhằm vào các nhóm thiểu số và đối thủ chính trị.",
-    examples: "Các vụ tấn công khủng bố của các nhóm cực hữu."
-  }
-];
+//
+// Component hiển thị từng Event
+//
+function TimelineEvent({
+  event,
+  index,
+  toggleEvent,
+  expandedEvents,
+  openEventDialog
+}: {
+  event: TimelineEventData
+  index: number
+  toggleEvent: (i: number) => void
+  expandedEvents: number[]
+  openEventDialog: (event: TimelineEventData, subEvent?: SubEvent) => void
+}) {
+  const isExpanded = expandedEvents.includes(index)
+  const hasSubEvents = event.subEvents && event.subEvents.length > 0
 
-export default function AnalysisPageView() {
   return (
-    <div className="space-y-20">
-      {/* Background pattern */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/80 to-background/30">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f01a_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f01a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+    <motion.div
+      className="timeline-event flex gap-6 border-l-2 border-primary/20 pl-8 pb-8 relative"
+      data-year={event.year}
+      id={`year-${event.year}`}
+      variants={fadeInUp}
+      initial="hidden"
+      animate="show"
+      custom={index}
+    >
+      {/* Timeline dot */}
+      <div className="absolute -left-2 top-4">
+        <div className="w-4 h-4 bg-primary rounded-full border-4 border-background"></div>
       </div>
-      
-      <div className="container mx-auto px-4 py-16 space-y-20 relative">
-      {/* Hero */}
-      <motion.section
-        initial="hidden"
-        animate="show"
-        variants={fadeIn(0)}
-        className="grid md:grid-cols-2 gap-10 items-center"
-      >
-        <div className="relative z-10">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Phân tích & Phê phán
-            </h1>
-            <p className="text-xl text-muted-foreground mb-6 max-w-2xl">
-              Bản chất nguy hiểm của hệ tư tưởng và bài học cho hiện tại
-            </p>
-            <p className="text-muted-foreground max-w-2xl">
-              Bài phân tích chuyên sâu về cơ chế hoạt động, sự trỗi dậy và di sản của chủ nghĩa Quốc xã, 
-              cùng những cảnh báo cho thế giới đương đại.
-            </p>
-          </motion.div>
-          
-          <motion.div 
-            className="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.7 }}
-            transition={{ duration: 1, delay: 0.5 }}
-          />
-          <motion.div 
-            className="absolute -left-20 -bottom-20 w-72 h-72 bg-destructive/10 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.7 }}
-            transition={{ duration: 1, delay: 0.7 }}
-          />
-        </div>
-        <div className="space-y-6">
-          <Card className="shadow-xl border-primary/30">
-            <CardHeader>
-              <CardTitle className="text-primary text-lg flex items-center gap-2">
-                <BarChart2 className="h-5 w-5" />
-                Tóm tắt chính
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc list-inside text-muted-foreground space-y-2 text-sm">
-                <li>Hệ tư tưởng toàn trị với chủ nghĩa dân tộc cực đoan</li>
-                <li>Phương pháp tuyên truyền tinh vi và kiểm soát thông tin</li>
-                <li>Cơ chế đàn áp có hệ thống và bài học cảnh giác</li>
-                <li>Biểu hiện đương đại và cách phòng chống</li>
-              </ul>
-            </CardContent>
-          </Card>
-          
-          <Alert className="border-destructive/20 bg-destructive/5">
-            <AlertTriangle className="h-4 w-4 text-destructive" />
-            <AlertTitle className="text-destructive">Lưu ý quan trọng</AlertTitle>
-            <AlertDescription className="text-sm">
-              Nghiên cứu lịch sử này nhằm mục đích giáo dục và cảnh báo, không nhằm cổ xúy hay tuyên truyền cho bất kỳ hình thức cực đoan nào.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </motion.section>
 
-      {/* Historical Context with Image */}
-      <motion.section 
-        className="relative py-20 overflow-hidden"
-        variants={fadeIn(0.2)}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-      >
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-black/60" />
+      {/* Timeline image */}
+      <div className="flex-shrink-0">
+        <figure
+          className="w-24 h-24 md:w-32 md:h-32 rounded-lg overflow-hidden bg-muted relative cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+          onClick={() => openEventDialog(event)}
+        >
           <Image
-            src={IMAGES.rise}
-            alt="Rise of Nazism"
+            src={event.image || ""}
+            alt={`Sự kiện năm ${event.year}`}
             fill
-            className="object-cover"
-            priority
+            className="object-cover hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 768px) 96px, 128px"
           />
+        </figure>
+      </div>
+
+      {/* Timeline content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3 mb-3">
+          <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <span className="font-bold text-lg text-primary">{event.year}</span>
+          {hasSubEvents && (
+            <button
+              onClick={() => toggleEvent(index)}
+              className="ml-auto p-1 hover:bg-muted rounded-md transition-colors"
+              aria-label={isExpanded ? "Thu gọn" : "Mở rộng"}
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-6 w-6 text-muted-foreground border-1 border-muted-foreground rounded-full" />
+              ) : (
+                <ChevronRight className="h-6 w-6 text-muted-foreground border-1 border-muted-foreground rounded-full" />
+              )}
+            </button>
+          )}
         </div>
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-3xl bg-background/90 backdrop-blur-sm p-8 rounded-xl border border-border/50">
-            <h2 className="text-3xl font-semibold mb-6 flex items-center gap-2">
-              <Eye className="h-7 w-7 text-destructive" />
-              Bối cảnh lịch sử
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Sự trỗi dậy của chủ nghĩa Quốc xã trong những năm 1920-1930 là kết quả của sự kết hợp giữa bối cảnh lịch sử đặc biệt, 
-              tâm lý xã hội và sự lợi dụng các thể chế dân chủ để tiến tới độc tài.
+
+        <div className="space-y-2">
+          <h3 className="text-base font-semibold text-foreground leading-tight">
+            {event.title || event.event}
+          </h3>
+          {event.description && (
+            <p className="text-sm text-muted-foreground line-clamp-3">
+              {event.description}
             </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-muted/30 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Điều kiện tiên quyết</h4>
-                <ul className="text-sm space-y-1 text-muted-foreground">
-                  <li>• Hậu quả Hiệp ước Versailles</li>
-                  <li>• Siêu lạm phát 1923</li>
-                  <li>• Đại suy thoái 1929</li>
-                </ul>
+          )}
+        </div>
+
+        {/* Sub Events */}
+        {hasSubEvents && isExpanded && (
+          <motion.div
+            className="mt-6 space-y-4 pl-4 border-l-2 border-muted-foreground "
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {event.subEvents?.map((subEvent, subIndex) => (
+              <motion.div
+                key={subIndex}
+                className="flex gap-4 relative"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: subIndex * 0.1 }}
+              >
+                {/* Sub-timeline dot */}
+                <div className="absolute -left-5 top-2 bg-white w-fit h-fit py-1">
+                  <div className="w-2 h-2 bg-muted-foreground rounded-full"></div>
+                </div>
+
+                {/* Sub-event image */}
+                {subEvent.image && (
+                  <div className="flex-shrink-0">
+                    <figure
+                      className="w-12 h-12 rounded-md overflow-hidden bg-muted relative cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                      onClick={() => openEventDialog(event, subEvent)}
+                    >
+                      <Image
+                        src={subEvent.image}
+                        alt={`${subEvent.title}`}
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-200"
+                        sizes="48px"
+                      />
+                    </figure>
+                  </div>
+                )}
+
+                {/* Sub-event content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    {subEvent.date && (
+                      <span className="text-xs font-medium text-primary">
+                        {subEvent.date}
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-sm font-medium text-foreground mb-1">
+                    {subEvent.title}
+                  </h4>
+                  {subEvent.description && (
+                    <p className="text-xs text-muted-foreground">
+                      {subEvent.description}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </div>
+    </motion.div>
+  )
+}
+
+//
+// Trang chính
+//
+export default function HistoryPageView() {
+  const { data: timeline, isLoading } = useTimeline()
+  const [expandedEvents, setExpandedEvents] = useState<number[]>([])
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState<TimelineEventData | null>(null)
+  const [selectedSubEvent, setSelectedSubEvent] = useState<SubEvent | null>(null)
+
+  const toggleEvent = (eventIndex: number) => {
+    setExpandedEvents(prev =>
+      prev.includes(eventIndex)
+        ? prev.filter(i => i !== eventIndex)
+        : [...prev, eventIndex]
+    )
+  }
+
+  const openEventDialog = (event: TimelineEventData, subEvent?: SubEvent) => {
+    setSelectedEvent(event)
+    setSelectedSubEvent(subEvent || null)
+    setDialogOpen(true)
+  }
+
+  const closeDialog = () => {
+    setDialogOpen(false)
+    setSelectedEvent(null)
+    setSelectedSubEvent(null)
+  }
+
+  return (
+    <>
+      {/* Video Header */}
+      <VideoHeader
+        videoSrc="https://www.annefrank.org/media/filer_public/04/8c/048cdcf4-fd90-44af-93e0-1203e213e818/zoom_video_header_-_landingspagina_tijdlijn.mp4"
+        posterImage="https://www.annefrank.org/media/filer_public_thumbnails/filer_public/d1/14/d1145da8-3ceb-4422-8054-0414a1afe77e/zoom_video_header_still_-_landingspagina_tijdlijn.jpg__1280x1280_q85_subsampling-2.jpg"
+        title="Lịch sử Chủ nghĩa Quốc xã"
+        subtitle="Từ sự ra đời đến sự sụp đổ của chế độ Quốc xã Đức (1919-1945)"
+      />
+
+      <div id="main-content" className="container mx-auto px-4 py-12">
+        <div className="max-w-5xl mx-auto space-y-16">
+          {/* Timeline */}
+          <section>
+            <h2 className="text-2xl font-semibold mb-8 flex items-center gap-2">
+              <Calendar className="h-6 w-6" /> Dòng thời gian chính
+            </h2>
+
+            {isLoading ? (
+              <div className="space-y-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-1/2"></div>
+                  </div>
+                ))}
               </div>
-              <div className="bg-muted/30 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Yếu tố then chốt</h4>
-                <ul className="text-sm space-y-1 text-muted-foreground">
-                  <li>• Tuyên truyền hiệu quả</li>
-                  <li>• Đàn áp đối lập</li>
-                  <li>• Lợi dụng khủng hoảng</li>
-                </ul>
+            ) : (
+              <div className="space-y-8">
+                {timeline?.map((event, i) => (
+                  <TimelineEvent
+                    key={i}
+                    event={{ ...event, image: event.image ?? "" }}
+                    index={i}
+                    toggleEvent={toggleEvent}
+                    expandedEvents={expandedEvents}
+                    openEventDialog={openEventDialog}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+
+      {/* Event Detail Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              <Clock className="h-5 w-5 text-primary" />
+              <span>
+                {selectedSubEvent
+                  ? `${selectedEvent?.year} - ${selectedSubEvent?.date}`
+                  : selectedEvent?.year}
+              </span>
+            </DialogTitle>
+            <DialogClose
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              onClick={closeDialog}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </DialogHeader>
+
+          {selectedEvent && (
+            <div className="mt-6 space-y-6">
+              {/* Main Image */}
+              <div className="relative h-64 md:h-80 rounded-lg overflow-hidden">
+                <Image
+                  src={selectedSubEvent?.image || selectedEvent.image || ""}
+                  alt={
+                    selectedSubEvent?.title ||
+                    selectedEvent.title ||
+                    selectedEvent.event
+                  }
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 800px"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="space-y-4">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2">
+                    {selectedSubEvent?.title ||
+                      selectedEvent.title ||
+                      selectedEvent.event}
+                  </h2>
+                  {selectedSubEvent?.description && (
+                    <p className="text-muted-foreground mb-4">
+                      {selectedSubEvent.description}
+                    </p>
+                  )}
+                  {selectedEvent.description && !selectedSubEvent && (
+                    <p className="text-muted-foreground mb-4">
+                      {selectedEvent.description}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </motion.section>
-
-      {/* Nguy hiểm */}
-      <motion.section 
-        className="py-20"
-        variants={fadeIn(0.2)} 
-        initial="hidden" 
-        whileInView="show" 
-        viewport={{ once: true }}
-      >
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1.5 text-xs font-medium rounded-full bg-destructive/10 text-destructive mb-3">
-              Phân tích chuyên sâu
-            </span>
-            <h2 className="text-3xl font-semibold mb-4">Tại sao Chủ nghĩa Quốc xã lại nguy hiểm?</h2>
-            <p className="text-muted-foreground max-w-3xl mx-auto">
-              Phân tích các yếu tố làm nên sự nguy hiểm đặc biệt của chủ nghĩa Quốc xã
-            </p>
-          </div>
-        </div>
-        <div className="grid md:grid-cols-2 gap-8">
-          {[{ title: "Tính hệ thống", desc: "Một hệ tư tưởng hoàn chỉnh để tiêu diệt các nhóm người." },
-            { title: "Tính công nghiệp", desc: "Dùng công nghệ & tổ chức hiện đại để diệt chủng quy mô lớn." },
-            { title: "Tính lây lan", desc: "Truyền bá nhanh qua tuyên truyền & bất mãn xã hội." },
-            { title: "Tính phá hoại", desc: "Phá hủy giá trị nhân văn, dân chủ từ bên trong." }].map((item, i) => (
-            <motion.div key={i} variants={fadeIn(0.1 * i)}>
-              <Card className="hover:shadow-lg hover:-translate-y-1 transition">
-                <CardHeader>
-                  <CardTitle className="text-lg text-destructive">{item.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Bài học lịch sử */}
-      <motion.section
-        variants={fadeIn(0.2)}
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        className="bg-muted/40 rounded-xl p-10"
-      >
-        <h2 className="text-3xl font-semibold mb-8 flex items-center gap-2">
-          <BookOpen className="h-7 w-7 text-primary" />
-          Bài học lịch sử
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {[
-            "Dân chủ có thể bị phá hoại từ bên trong",
-            "Sự thờ ơ của đa số dẫn đến thảm họa",
-            "Tuyên truyền có sức mạnh khủng khiếp",
-            "Khủng hoảng kinh tế nuôi dưỡng cực đoan",
-          ].map((lesson, i) => (
-            <motion.div
-              key={i}
-              variants={fadeIn(0.1 * i)}
-              className="bg-background rounded-lg p-6 border hover:bg-muted/20 transition"
-            >
-              <h3 className="font-semibold mb-2">{i + 1}. {lesson}</h3>
-              <p className="text-sm text-muted-foreground">
-                {lesson.includes("Dân chủ") && "Hitler lên nắm quyền qua con đường dân chủ nhưng phá hoại từ bên trong."}
-                {lesson.includes("thờ ơ") && "Người dân thờ ơ, không hành động, tạo cơ hội cho tội ác."}
-                {lesson.includes("Tuyên truyền") && "Kiểm soát thông tin có thể thay đổi nhận thức cả xã hội."}
-                {lesson.includes("Khủng hoảng") && "Khủng hoảng khiến con người dễ tìm &apos;kẻ thù&apos; để đổ lỗi."}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Alert */}
-      <motion.div variants={fadeIn(0.2)} initial="hidden" whileInView="show" viewport={{ once: true }}>
-        <Alert className="border-warning/20 bg-warning/5 shadow-md">
-          <AlertTriangle className="h-4 w-4 text-warning" />
-          <AlertTitle className="text-warning">Chủ nghĩa Tân Quốc xã hiện đại</AlertTitle>
-          <AlertDescription>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              <li>Các nhóm cực hữu & tân phát xít</li>
-              <li>Chủ nghĩa dân tộc cực đoan, bài ngoại</li>
-              <li>Tin giả & thuyết âm mưu trên mạng</li>
-              <li>Phong trào phủ nhận Holocaust</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
-      </motion.div>
-
-      {/* Các phần tiếp theo giữ nguyên, chỉ sửa các dấu " và ' trong JSX */}
-      {/* ... tương tự như các section trước ... */}
-    </div>
-  </div> 
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

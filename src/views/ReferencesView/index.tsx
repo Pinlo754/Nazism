@@ -302,7 +302,7 @@ export default function ReferencesPage() {
         "Cơ sở dữ liệu toàn diện ghi chép tên của nạn nhân Holocaust.",
       records: "4,8+ triệu tên",
       image:
-        "/congly-vn_noi-co-don-cua-nan-nhan-song-sot-sau-tham-hoa-holocaust-trong-dich-covid-19-hinh-anh01042365712.jpg/?height=200&width=300",
+        "/congly-vn_noi-co-don-cua-nan-nhan-song-sot-sau-tham-hoa-holocaust-trong-dich-covid-19-hinh-anh01042365712.jpg",
     },
     {
       name: "Kho lưu trữ Arolsen",
@@ -358,8 +358,10 @@ export default function ReferencesPage() {
       {/* Hero Banner */}
       <div className="relative z-10 h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <Image
-          src="/banner.jpg?height=800&width=1600"
+          src="/banner.jpg"
           alt="Banner"
+          width={1600}
+          height={800}
           className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-white/10 via-white/20 to-white" />
@@ -457,6 +459,8 @@ function CardItem({ item, type }: { item: BaseItem; type: string }) {
         <Image
           src={item.image || "/placeholder.svg"}
           alt={item.name || item.title || "Image"}
+          width={400}
+          height={300}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />
