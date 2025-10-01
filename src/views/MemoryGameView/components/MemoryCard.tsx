@@ -11,7 +11,14 @@ type MemoryCardProps = {
   onClick: (index: number) => void;
 };
 
-export default function MemoryCard({ index, content, type, isFlipped, isMatched, onClick }: MemoryCardProps) {
+export default function MemoryCard({
+  index,
+  content,
+  type,
+  isFlipped,
+  isMatched,
+  onClick,
+}: MemoryCardProps) {
   return (
     <motion.div
       layout
@@ -39,7 +46,12 @@ export default function MemoryCard({ index, content, type, isFlipped, isMatched,
           transition={{ duration: 0.5 }}
         >
           {type === "image" ? (
-            <Image src={content} alt="card" className="h-full w-full object-contain rounded" />
+            <Image
+              src={content}
+              alt="card"
+              fill
+              className="object-cover rounded"
+            />
           ) : (
             <span>{content}</span>
           )}
