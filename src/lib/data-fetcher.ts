@@ -1,4 +1,3 @@
-import { image } from "motion/react-client"
 import useSWR from "swr"
 
 // Mock data fetcher for historical content

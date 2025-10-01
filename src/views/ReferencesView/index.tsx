@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fadeInUp } from "@/lib/variants";
+import  Image  from "next/image";
 
 // Hàm tiện ích để tạo slug từ tiêu đề
 const slugify = (text: string) => {
@@ -36,6 +37,23 @@ interface SectionLink {
   title: string;
   slug: string;
   icon: React.ElementType;
+}
+
+interface BaseItem {
+  title?: string;
+  name?: string;
+  description: string;
+  image?: string;
+  url?: string;
+  duration?: string;
+  director?: string;
+  location?: string;
+  provider?: string;
+  type?: string;
+  established?: string;
+  volume?: string;
+  records?: string;
+  focus?: string;
 }
 
 function MiniSidebar({ sections }: { sections: SectionLink[] }) {
@@ -339,7 +357,7 @@ export default function ReferencesPage() {
 
       {/* Hero Banner */}
       <div className="relative z-10 h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-        <img
+        <Image
           src="/banner.jpg?height=800&width=1600"
           alt="Banner"
           className="absolute inset-0 w-full h-full object-cover"
@@ -374,7 +392,7 @@ export default function ReferencesPage() {
                 section.type === "documentary" ? "md:grid-cols-2" : "md:grid-cols-3"
               }`}
             >
-              {section.items.map((item: any, i: number) => (
+              {section.items.map((item: BaseItem, i: number) => (
                 <motion.div
                   key={i}
                   variants={fadeInUp}
@@ -428,7 +446,7 @@ function Section({
   );
 }
 
-function CardItem({ item, type }: { item: any; type: string }) {
+function CardItem({ item, type }: { item: BaseItem; type: string }) {
   return (
     <Card className="h-full bg-white border-gray-200 hover:bg-gray-50 transition-all duration-300 hover:border-gray-400 overflow-hidden group hover:shadow-lg flex flex-col">
       <div
@@ -436,9 +454,9 @@ function CardItem({ item, type }: { item: any; type: string }) {
           type === "documentary" ? "h-56" : type === "museum" ? "h-48" : "h-40"
         }`}
       >
-        <img
+        <Image
           src={item.image || "/placeholder.svg"}
-          alt={item.name || item.title}
+          alt={item.name || item.title || "Image"}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent" />

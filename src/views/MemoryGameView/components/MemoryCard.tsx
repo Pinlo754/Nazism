@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import Image from "next/image";
 type MemoryCardProps = {
   index: number;
   content: string;
@@ -39,7 +39,7 @@ export default function MemoryCard({ index, content, type, isFlipped, isMatched,
           transition={{ duration: 0.5 }}
         >
           {type === "image" ? (
-            <img src={content} alt="card" className="h-full w-full object-contain rounded" />
+            <Image src={content} alt="card" className="h-full w-full object-contain rounded" />
           ) : (
             <span>{content}</span>
           )}
