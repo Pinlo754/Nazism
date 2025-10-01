@@ -410,7 +410,7 @@ export default function AnalysisPageView() {
               Nó cho thấy cách một xã hội văn minh có thể tuột dốc vào bạo lực và phân biệt đối xử khi các giá trị nhân văn bị xói mòn.
             </p>
             <p className="mb-4">
-              <span className="font-semibold text-primary">"Never Again"</span> - Không bao giờ được lặp lại - 
+              <span className="font-semibold text-primary">&quot;Never Again&quot;</span> - Không bao giờ được lặp lại - 
               không chỉ là khẩu hiệu mà phải là kim chỉ nam cho hành động. Điều này đòi hỏi:
             </p>
             <ul className="list-disc list-inside space-y-2 text-left">
