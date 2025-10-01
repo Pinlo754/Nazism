@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import Image from "next/image"
 import type { Map as LeafletMap, DivIcon } from "leaflet"
 import {
@@ -84,15 +84,15 @@ export default function InteractiveCampsMap() {
     (typeof concentrationCamps)[0] | null
   >(null)
   const [isClient, setIsClient] = useState(false)
-  const [map, setMap] = useState<LeafletMap | null>(null)
   const [mapReady, setMapReady] = useState(false)
+  const mapRef = useRef<LeafletMap | null>(null)
 
   useEffect(() => {
     setIsClient(true)
   }, [])
 
   useEffect(() => {
-    if (!isClient) return
+    if (!isClient || mapRef.current) return // map đã tồn tại thì bỏ qua
 
     const initMap = async () => {
       try {
@@ -110,12 +110,12 @@ export default function InteractiveCampsMap() {
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
         })
 
-        // Dọn map cũ nếu có
-        if (map) map.remove()
-
+        // tạo map
         const mapInstance = L.map("camps-map", {
           attributionControl: false,
         }).setView([51.5, 15.0], 5)
+
+        mapRef.current = mapInstance
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution:
@@ -184,7 +184,6 @@ export default function InteractiveCampsMap() {
           if (camp) setSelectedCamp(camp)
         }
 
-        setMap(mapInstance)
         setMapReady(true)
       } catch (error) {
         console.error("Failed to initialize map:", error)
@@ -194,7 +193,8 @@ export default function InteractiveCampsMap() {
     initMap()
 
     return () => {
-      map?.remove()
+      mapRef.current?.remove()
+      mapRef.current = null
     }
   }, [isClient])
 
