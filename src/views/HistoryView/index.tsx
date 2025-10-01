@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertTriangle, Eye, Shield, BookOpen, BarChart2, Users, Globe, Scale, Brain, ExternalLink } from "lucide-react"
+import { AlertTriangle, Eye, Shield, BookOpen, BarChart2, Users, Globe} from "lucide-react"
 import { fadeIn } from "@/lib/variants";
 
 // Placeholder images - replace with your actual image paths
@@ -16,46 +16,6 @@ const IMAGES = {
   timeline: "/images/analysis/historical-timeline.jpg"
 };
 
-const riskFactors = [
-  {
-    title: "Bối cảnh lịch sử",
-    description: "Đức sau Thế chiến I với Hiệp ước Versailles khắc nghiệt, siêu lạm phát năm 1923, và Đại suy thoái 1929 tạo mảnh đất màu mỡ cho chủ nghĩa cực đoan.",
-    icon: <BookOpen className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Tâm lý đám đông",
-    description: "Sử dụng tâm lý đám đông, tạo kẻ thù chung và hứa hẹn phục hồi vị thế dân tộc.",
-    icon: <Users className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Tuyên truyền hiệu quả",
-    description: "Bộ máy tuyên truyền của Joseph Goebbels kiểm soát toàn bộ thông tin đại chúng.",
-    icon: <Globe className="h-5 w-5 text-primary" />
-  },
-  {
-    title: "Đàn áp đối lập",
-    description: "Thiết lập nhà nước cảnh sát, xóa bỏ các quyền tự do dân sự và đàn áp bất đồng chính kiến.",
-    icon: <Shield className="h-5 w-5 text-primary" />
-  }
-];
-
-const modernManifestations = [
-  {
-    title: "Chủ nghĩa dân tộc cực đoan",
-    description: "Bài ngoại và bài nhập cư dưới danh nghĩa bảo vệ bản sắc dân tộc.",
-    examples: "Các phong trào cực hữu ở châu Âu, chủ nghĩa da trắng thượng đẳng."
-  },
-  {
-    title: "Thuyết âm mưu",
-    description: "Phổ biến các thuyết âm mưu về kiểm soát toàn cầu, phủ nhận Holocaust.",
-    examples: "QAnon, các nhóm phủ nhận tội ác diệt chủng."
-  },
-  {
-    title: "Bạo lực chính trị",
-    description: "Sử dụng bạo lực nhằm vào các nhóm thiểu số và đối thủ chính trị.",
-    examples: "Các vụ tấn công khủng bố của các nhóm cực hữu."
-  }
-];
 
 export default function AnalysisPageView() {
   return (
