@@ -152,6 +152,45 @@ export default function HomePageView() {
           ))}
         </div>
       </motion.section>
+
+      {/* Team Members Footer */}
+      <motion.footer
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="show"
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="mt-24 pt-8 border-t border-border"
+      >
+        <h2 className="text-2xl font-bold text-center mb-8">Đội ngũ phát triển</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            { name: 'Nguyễn Minh Quân', role: 'Phân tích & Phê phán' },
+            { name: 'Trần Thị B', role: 'Nhà nghiên cứu' },
+            { name: 'Lê Văn C', role: 'Thiết kế' },
+            { name: 'Phạm Thị D', role: 'Nội dung' },
+          ].map((member, i) => (
+            <motion.div
+              key={i}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              transition={{ delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className="p-4 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center text-2xl font-bold text-muted-foreground">
+                {member.name.split(' ').pop()?.[0]}
+              </div>
+              <h3 className="font-medium">{member.name}</h3>
+              <p className="text-sm text-muted-foreground">{member.role}</p>
+            </motion.div>
+          ))}
+        </div>
+        <p className="text-center text-sm text-muted-foreground mt-8">
+          © {new Date().getFullYear()} Dự án nghiên cứu Chủ nghĩa Quốc xã
+        </p>
+      </motion.footer>
     </div>
   )
 }
