@@ -5,6 +5,7 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/sonner';
 import { QueryProvider } from '@/provider/query-provider'
 import { Geist, Geist_Mono, Montserrat } from 'next/font/google';
+import AIChatbox from '@/components/ai-chatbox';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -45,6 +46,7 @@ export default function RootLayout({
           <QueryProvider>
             <LayoutDefault>{children}</LayoutDefault>
           </QueryProvider>
+          <AIChatbox />
         </ThemeProvider>
       </body>
     </html>
