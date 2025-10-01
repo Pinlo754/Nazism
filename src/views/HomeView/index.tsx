@@ -166,9 +166,9 @@ export default function HomePageView() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
             { name: 'Nguyễn Minh Quân', role: 'Phân tích & Phê phán' },
-            { name: 'Trần Thị B', role: 'Nhà nghiên cứu' },
-            { name: 'Lê Văn C', role: 'Thiết kế' },
-            { name: 'Phạm Thị D', role: 'Nội dung' },
+            { name: 'Trần	Đức	Phát', role: 'Lịch sử, Tội ác và Hậu quả' },
+            { name: 'Nguyễn Thanh Phong', role: 'Thiết kế & Trang chủ' },
+            { name: 'Đàm	Hải	Hiện', role: 'Chủ nghĩa Quốc xã' },
           ].map((member, i) => (
             <motion.div
               key={i}
