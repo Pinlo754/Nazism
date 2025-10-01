@@ -66,13 +66,6 @@ const concentrationCamps = [
 ]
 
 // Define types for Leaflet to avoid TypeScript errors
-interface LeafletMarker {
-  setLatLng: (latlng: [number, number]) => void;
-  getLatLng: () => { lat: number; lng: number };
-  addTo: (map: any) => void;
-  bindPopup: (content: string) => void;
-  on: (event: string, handler: () => void) => void;
-}
 
 interface LeafletMap {
   setView: (center: [number, number], zoom: number) => void;
