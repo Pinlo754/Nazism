@@ -165,10 +165,10 @@ export default function HomePageView() {
         <h2 className="text-2xl font-bold text-center mb-8">Đội ngũ phát triển</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {[
-            { name: 'Nguyễn Minh Quân', role: 'Phân tích & Phê phán' },
-            { name: 'Trần Thị B', role: 'Nhà nghiên cứu' },
-            { name: 'Lê Văn C', role: 'Thiết kế' },
-            { name: 'Phạm Thị D', role: 'Nội dung' },
+            { name: 'Nguyễn Minh Quân', role: '' },
+            { name: 'Nguyễn Thanh Phong', role: '' },
+            { name: 'Trần Đức Phát', role: '' },
+            { name: 'Đàm Hải Hiện', role: '' },
           ].map((member, i) => (
             <motion.div
               key={i}
