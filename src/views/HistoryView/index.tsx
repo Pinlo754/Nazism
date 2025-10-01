@@ -4,7 +4,7 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertTriangle, Eye, Shield, BookOpen, BarChart2, Users, Globe} from "lucide-react"
+import { AlertTriangle, Eye, BookOpen, BarChart2} from "lucide-react"
 import { fadeIn } from "@/lib/variants";
 
 // Placeholder images - replace with your actual image paths

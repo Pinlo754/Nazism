@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import type { Map as LeafletMap, Icon, DivIcon } from "leaflet";
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import type { Map as LeafletMap, DivIcon } from "leaflet"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Users, Calendar } from "lucide-react";
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { MapPin, Users, Calendar } from "lucide-react"
 
 // Data cho các trại tập trung
 const concentrationCamps = [
@@ -70,37 +70,37 @@ const concentrationCamps = [
     image: "/assets/camps/Dachau.jpg",
     type: "Trại tập trung",
   },
-];
+]
 
 // mở rộng Window cho TS
 declare global {
   interface Window {
-    selectCamp?: (campId: number) => void;
+    selectCamp?: (campId: number) => void
   }
 }
 
 export default function InteractiveCampsMap() {
   const [selectedCamp, setSelectedCamp] = useState<
     (typeof concentrationCamps)[0] | null
-  >(null);
-  const [isClient, setIsClient] = useState(false);
-  const [map, setMap] = useState<LeafletMap | null>(null);
-  const [mapReady, setMapReady] = useState(false);
+  >(null)
+  const [isClient, setIsClient] = useState(false)
+  const [map, setMap] = useState<LeafletMap | null>(null)
+  const [mapReady, setMapReady] = useState(false)
 
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient) return
 
     const initMap = async () => {
       try {
-        const L = await import("leaflet");
+        const L: typeof import("leaflet") = await import("leaflet")
 
         // fix icon default
         // @ts-expect-error private property không có trong type
-        delete L.Icon.Default.prototype._getIconUrl;
+        delete L.Icon.Default.prototype._getIconUrl
         L.Icon.Default.mergeOptions({
           iconRetinaUrl:
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -108,28 +108,26 @@ export default function InteractiveCampsMap() {
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
           shadowUrl:
             "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-        });
+        })
 
-        // Kiểm tra nếu map đã tồn tại thì remove
-        if ((L as any).Map && (L as any).mapInstances) {
-          (L as any).mapInstances.forEach((m: L.Map) => m.remove());
-        }
+        // Dọn map cũ nếu có
+        if (map) map.remove()
 
         const mapInstance = L.map("camps-map", {
           attributionControl: false,
-        }).setView([51.5, 15.0], 5);
+        }).setView([51.5, 15.0], 5)
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution:
             '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }).addTo(mapInstance);
+        }).addTo(mapInstance)
 
         // tạo icon custom
         const createCustomIcon = (
           camp: (typeof concentrationCamps)[0]
         ): DivIcon => {
           const iconColor =
-            camp.type === "Trại diệt chủng" ? "#dc2626" : "#ea580c";
+            camp.type === "Trại diệt chủng" ? "#dc2626" : "#ea580c"
           const iconHtml = `
             <div style="
               background-color: ${iconColor}; 
@@ -147,21 +145,21 @@ export default function InteractiveCampsMap() {
             ">
               ${camp.type === "Trại diệt chủng" ? "☠" : "⚠"}
             </div>
-          `;
+          `
           return L.divIcon({
             className: "custom-marker",
             html: iconHtml,
             iconSize: [25, 25],
             iconAnchor: [12.5, 12.5],
             popupAnchor: [0, -12.5],
-          });
-        };
+          })
+        }
 
         // thêm markers
         concentrationCamps.forEach((camp) => {
           const marker = L.marker(camp.coordinates, {
             icon: createCustomIcon(camp),
-          }).addTo(mapInstance);
+          }).addTo(mapInstance)
 
           const popupContent = `
             <div style="min-width: 200px; max-width: 300px;">
@@ -173,32 +171,32 @@ export default function InteractiveCampsMap() {
                 Xem chi tiết →
               </button>
             </div>
-          `;
+          `
           marker.bindPopup(popupContent, {
             maxWidth: 300,
             className: "custom-popup",
-          });
-          marker.on("click", () => setSelectedCamp(camp));
-        });
+          })
+          marker.on("click", () => setSelectedCamp(camp))
+        })
 
         window.selectCamp = (campId: number) => {
-          const camp = concentrationCamps.find((c) => c.id === campId);
-          if (camp) setSelectedCamp(camp);
-        };
+          const camp = concentrationCamps.find((c) => c.id === campId)
+          if (camp) setSelectedCamp(camp)
+        }
 
-        setMap(mapInstance);
-        setMapReady(true);
+        setMap(mapInstance)
+        setMapReady(true)
       } catch (error) {
-        console.error("Failed to initialize map:", error);
+        console.error("Failed to initialize map:", error)
       }
-    };
+    }
 
-    initMap();
+    initMap()
 
     return () => {
-      map?.remove();
-    };
-  }, [isClient, map]);
+      map?.remove()
+    }
+  }, [isClient])
 
   if (!isClient) {
     return (
@@ -208,7 +206,7 @@ export default function InteractiveCampsMap() {
           <p className="text-muted-foreground">Đang tải bản đồ...</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -305,8 +303,8 @@ export default function InteractiveCampsMap() {
                   height={128}
                   className="w-full h-32 object-cover rounded-md"
                   onError={(e) => {
-                    console.error("Image load error:", selectedCamp.image);
-                    e.currentTarget.style.display = "none";
+                    console.error("Image load error:", selectedCamp.image)
+                    e.currentTarget.style.display = "none"
                   }}
                 />
               </div>
@@ -315,5 +313,5 @@ export default function InteractiveCampsMap() {
         </Card>
       )}
     </div>
-  );
+  )
 }
