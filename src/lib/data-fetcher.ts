@@ -72,7 +72,7 @@ const mockData: {
             date: "1 tháng 8, 1920",
             title: "Ra mắt báo Völkischer Beobachter", 
             description: "Tờ báo chính thức của đảng được xuất bản",
-            image : "https://www.dhm.de/lemo/fileadmin/medien/lemo/images/d2a09743.jpg"
+            image : "https://c8.alamy.com/compde/db7r77/nationalsozialismus-presse-medien-voelkischer-beobachter-nummer-247-franz-eher-verlag-munchen-1101942-zusatzrechte-clearences-nicht-vorhanden-db7r77.jpg"
           }
         ]
       },
