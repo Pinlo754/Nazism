@@ -51,7 +51,7 @@ const AIChatbox = ({ className = "" }: AIChatboxProps) => {
   useEffect(() => {
     // Check API key status on mount
     const checkApiStatus = async () => {
-      const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY
+      const API_KEY = process.env.GEMINI_API_KEY
       if (!API_KEY || API_KEY === 'your_gemini_api_key_here') {
         setApiStatus('not-configured')
         return
