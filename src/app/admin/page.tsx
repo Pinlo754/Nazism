@@ -5,16 +5,33 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Trophy, Users, Target, Clock, RefreshCw, Trash2 } from "lucide-react"
-import { getAllResults, clearAllResults, type PlayerResult } from "../..//lib/quiz-data"
+
+type PlayerResult = {
+  id: string
+  name: string
+  score: string
+  createdAt: string
+}
 
 export default function AdminPage() {
   const router = useRouter()
   const [results, setResults] = useState<PlayerResult[]>([])
   const [autoRefresh, setAutoRefresh] = useState(true)
+  const [loading, setLoading] = useState(false)
 
-  const loadResults = () => {
-    const allResults = getAllResults()
-    setResults(allResults.sort((a, b) => b.totalScore - a.totalScore))
+  const loadResults = async () => {
+    try {
+      setLoading(true)
+      const res = await fetch("https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result")
+      const data: PlayerResult[] = await res.json()
+      // sort theo điểm giảm dần
+      const sorted = data.sort((a, b) => Number(b.score) - Number(a.score))
+      setResults(sorted)
+    } catch (error) {
+      console.error("Failed to fetch results:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -31,18 +48,30 @@ export default function AdminPage() {
     return () => clearInterval(interval)
   }, [autoRefresh])
 
-  const handleClearResults = () => {
-    if (confirm("Bạn có chắc muốn xóa tất cả kết quả?")) {
-      clearAllResults()
+  const handleClearResults = async () => {
+    if (!confirm("Bạn có chắc muốn xóa tất cả kết quả?")) return
+
+    try {
+      setLoading(true)
+      await Promise.all(results.map(r =>
+        fetch(`https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result/${r.id}`, {
+          method: "DELETE"
+        })
+      ))
       loadResults()
+    } catch (error) {
+      console.error("Failed to clear results:", error)
+    } finally {
+      setLoading(false)
     }
   }
 
   const totalPlayers = results.length
-  const avgScore = totalPlayers > 0 ? Math.round(results.reduce((sum, r) => sum + r.totalScore, 0) / totalPlayers) : 0
-  const highestScore = totalPlayers > 0 ? results[0].totalScore : 0
-  const avgCorrect =
-    totalPlayers > 0 ? (results.reduce((sum, r) => sum + r.correctAnswers, 0) / totalPlayers).toFixed(1) : 0
+  const avgScore =
+    totalPlayers > 0
+      ? Math.round(results.reduce((sum, r) => sum + Number(r.score), 0) / totalPlayers)
+      : 0
+  const highestScore = totalPlayers > 0 ? Number(results[0].score) : 0
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-4 md:p-8">
@@ -67,7 +96,9 @@ export default function AdminPage() {
                   variant="outline"
                   size="icon"
                   onClick={() => setAutoRefresh(!autoRefresh)}
-                  className={`h-12 w-12 border-white text-white ${autoRefresh ? "bg-green-500/50 hover:bg-green-500/70" : "bg-white/20 hover:bg-white/30"}`}
+                  className={`h-12 w-12 border-white text-white ${
+                    autoRefresh ? "bg-green-500/50 hover:bg-green-500/70" : "bg-white/20 hover:bg-white/30"
+                  }`}
                 >
                   <Clock className="h-5 w-5" />
                 </Button>
@@ -119,7 +150,7 @@ export default function AdminPage() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Clock className="w-10 h-10 mx-auto mb-2 text-purple-600" />
-                <p className="text-3xl font-bold text-purple-600">{avgCorrect}/15</p>
+                <p className="text-3xl font-bold text-purple-600">—</p>
                 <p className="text-sm text-gray-600 font-medium">Câu đúng TB</p>
               </div>
             </CardContent>
@@ -134,56 +165,46 @@ export default function AdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {results.length > 0 ? (
+            {loading ? (
+              <p className="text-center text-gray-600">Đang tải dữ liệu...</p>
+            ) : results.length > 0 ? (
               <div className="space-y-3">
                 {results.map((result, index) => {
                   const rank = index + 1
-                  const accuracy = ((result.correctAnswers / 15) * 100).toFixed(0)
-
+                  const score = Number(result.score)
                   return (
                     <div
-                      key={index}
+                      key={result.id}
                       className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
                         rank === 1
                           ? "bg-yellow-50 border-yellow-400 shadow-lg"
                           : rank === 2
-                            ? "bg-gray-50 border-gray-400 shadow-md"
-                            : rank === 3
-                              ? "bg-orange-50 border-orange-400 shadow-md"
-                              : "bg-white border-gray-200"
+                          ? "bg-gray-50 border-gray-400 shadow-md"
+                          : rank === 3
+                          ? "bg-orange-50 border-orange-400 shadow-md"
+                          : "bg-white border-gray-200"
                       }`}
                     >
-                      {/* Rank */}
                       <div
                         className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl ${
                           rank === 1
                             ? "bg-yellow-400 text-yellow-900"
                             : rank === 2
-                              ? "bg-gray-400 text-gray-900"
-                              : rank === 3
-                                ? "bg-orange-400 text-orange-900"
-                                : "bg-purple-500 text-white"
+                            ? "bg-gray-400 text-gray-900"
+                            : rank === 3
+                            ? "bg-orange-400 text-orange-900"
+                            : "bg-purple-500 text-white"
                         }`}
                       >
                         {rank <= 3 ? (rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉") : rank}
                       </div>
-
-                      {/* Player Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-lg truncate">{result.playerName}</p>
+                        <p className="font-bold text-lg truncate">{result.name}</p>
                         <div className="flex gap-4 text-sm text-gray-600">
-                          <span>
-                            {result.correctAnswers}/15 đúng ({accuracy}%)
-                          </span>
+                          <span>{score} điểm</span>
                           <span>•</span>
-                          <span>{new Date(result.completedAt).toLocaleTimeString("vi-VN")}</span>
+                          <span>{new Date(result.createdAt).toLocaleTimeString("vi-VN")}</span>
                         </div>
-                      </div>
-
-                      {/* Score */}
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-purple-600">{result.totalScore.toLocaleString()}</p>
-                        <p className="text-sm text-gray-600">điểm</p>
                       </div>
                     </div>
                   )

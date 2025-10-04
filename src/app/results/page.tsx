@@ -22,19 +22,42 @@ export default function ResultsPage() {
   const [totalTime, setTotalTime] = useState<number>(0)
 
   useEffect(() => {
-    const name = getCurrentPlayer()
-    const answers: PlayerAnswer[] = getPlayerAnswers()
+  const name = getCurrentPlayer() || "Anonymous"
+  const answers: PlayerAnswer[] = getPlayerAnswers() || []
 
-    if (!name || answers.length === 0) {
-      router.push("/")
-      return
+  const calculatedScore = calculateScore(answers)
+
+  setPlayerName(name)
+  setScore(calculatedScore)
+  setCorrectCount(answers.filter(a => a.isCorrect).length)
+  setTotalTime(answers.reduce((sum, a) => sum + a.timeSpent, 0))
+
+  const postResult = async () => {
+    try {
+      const body = {
+        name,
+        score: calculatedScore.toString(),
+        createdAt: new Date().toISOString()
+      }
+      console.log("Đang POST:", body)
+
+      const res = await fetch("https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      })
+
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+      const data = await res.json()
+      console.log("POST thành công:", data)
+    } catch (err) {
+      console.error("POST thất bại:", err)
     }
+  }
 
-    setPlayerName(name)
-    setScore(calculateScore(answers))
-    setCorrectCount(answers.filter((a) => a.isCorrect).length)
-    setTotalTime(answers.reduce((sum, a) => sum + a.timeSpent, 0))
-  }, [router])
+  postResult()
+}, [])
+
 
   const handlePlayAgain = () => {
     clearPlayerAnswers()
@@ -64,7 +87,6 @@ export default function ResultsPage() {
             <p className="text-lg opacity-90">{scorePercentage}% điểm tối đa</p>
           </CardHeader>
           <CardContent className="p-8">
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="text-center p-6 bg-green-50 rounded-xl border-2 border-green-200">
                 <Target className="w-10 h-10 text-green-600 mx-auto mb-3" />
@@ -90,10 +112,10 @@ export default function ResultsPage() {
                   {correctCount >= 12
                     ? "Xuất sắc"
                     : correctCount >= 9
-                      ? "Tốt"
-                      : correctCount >= 6
-                        ? "Khá"
-                        : "Cần cố gắng"}
+                    ? "Tốt"
+                    : correctCount >= 6
+                    ? "Khá"
+                    : "Cần cố gắng"}
                 </p>
                 <p className="text-sm text-gray-600 font-medium mt-1">Xếp loại</p>
                 <p className="text-lg font-bold text-purple-600 mt-2">
@@ -102,7 +124,6 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button
                 onClick={handlePlayAgain}
