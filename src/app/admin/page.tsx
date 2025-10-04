@@ -1,77 +1,86 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Trophy, Users, Target, Clock, RefreshCw, Trash2 } from "lucide-react"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trophy, Users, Target, Clock, RefreshCw, Trash2 } from "lucide-react";
 
 type PlayerResult = {
-  id: string
-  name: string
-  score: string
-  createdAt: string
-}
+  id: string;
+  name: string;
+  score: string;
+  createdAt: string;
+};
 
 export default function AdminPage() {
-  const router = useRouter()
-  const [results, setResults] = useState<PlayerResult[]>([])
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [results, setResults] = useState<PlayerResult[]>([]);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadResults = async () => {
     try {
-      setLoading(true)
-      const res = await fetch("https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result")
-      const data: PlayerResult[] = await res.json()
+      setLoading(true);
+      const res = await fetch(
+        "https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result"
+      );
+      const data: PlayerResult[] = await res.json();
       // sort theo điểm giảm dần
-      const sorted = data.sort((a, b) => Number(b.score) - Number(a.score))
-      setResults(sorted)
+      const sorted = data.sort((a, b) => Number(b.score) - Number(a.score));
+      setResults(sorted);
     } catch (error) {
-      console.error("Failed to fetch results:", error)
+      console.error("Failed to fetch results:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadResults()
-  }, [])
+    loadResults();
+  }, []);
 
   useEffect(() => {
-    if (!autoRefresh) return
+    if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      loadResults()
-    }, 2000)
+      loadResults();
+    }, 2000);
 
-    return () => clearInterval(interval)
-  }, [autoRefresh])
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
   const handleClearResults = async () => {
-    if (!confirm("Bạn có chắc muốn xóa tất cả kết quả?")) return
+    if (!confirm("Bạn có chắc muốn xóa tất cả kết quả?")) return;
 
     try {
-      setLoading(true)
-      await Promise.all(results.map(r =>
-        fetch(`https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result/${r.id}`, {
-          method: "DELETE"
-        })
-      ))
-      loadResults()
+      setLoading(true);
+      await Promise.all(
+        results.map((r) =>
+          fetch(
+            `https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result/${r.id}`,
+            {
+              method: "DELETE",
+            }
+          )
+        )
+      );
+      loadResults();
     } catch (error) {
-      console.error("Failed to clear results:", error)
+      console.error("Failed to clear results:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const totalPlayers = results.length
+  const totalPlayers = results.length;
   const avgScore =
     totalPlayers > 0
-      ? Math.round(results.reduce((sum, r) => sum + Number(r.score), 0) / totalPlayers)
-      : 0
-  const highestScore = totalPlayers > 0 ? Number(results[0].score) : 0
+      ? Math.round(
+          results.reduce((sum, r) => sum + Number(r.score), 0) / totalPlayers
+        )
+      : 0;
+  const highestScore = totalPlayers > 0 ? Number(results[0].score) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-4 md:p-8">
@@ -80,8 +89,12 @@ export default function AdminPage() {
           <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
-                <CardTitle className="text-3xl font-bold">Bảng Xếp Hạng Admin</CardTitle>
-                <p className="text-white/90 text-lg mt-1">Theo dõi kết quả real-time</p>
+                <CardTitle className="text-3xl font-bold">
+                  Bảng Xếp Hạng Admin
+                </CardTitle>
+                <p className="text-white/90 text-lg mt-1">
+                  Theo dõi kết quả real-time
+                </p>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -97,7 +110,9 @@ export default function AdminPage() {
                   size="icon"
                   onClick={() => setAutoRefresh(!autoRefresh)}
                   className={`h-12 w-12 border-white text-white ${
-                    autoRefresh ? "bg-green-500/50 hover:bg-green-500/70" : "bg-white/20 hover:bg-white/30"
+                    autoRefresh
+                      ? "bg-green-500/50 hover:bg-green-500/70"
+                      : "bg-white/20 hover:bg-white/30"
                   }`}
                 >
                   <Clock className="h-5 w-5" />
@@ -120,7 +135,9 @@ export default function AdminPage() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Users className="w-10 h-10 mx-auto mb-2 text-blue-600" />
-                <p className="text-3xl font-bold text-blue-600">{totalPlayers}</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {totalPlayers}
+                </p>
                 <p className="text-sm text-gray-600 font-medium">Người chơi</p>
               </div>
             </CardContent>
@@ -130,8 +147,12 @@ export default function AdminPage() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Trophy className="w-10 h-10 mx-auto mb-2 text-yellow-600" />
-                <p className="text-3xl font-bold text-yellow-600">{highestScore.toLocaleString()}</p>
-                <p className="text-sm text-gray-600 font-medium">Điểm cao nhất</p>
+                <p className="text-3xl font-bold text-yellow-600">
+                  {highestScore.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 font-medium">
+                  Điểm cao nhất
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -140,8 +161,12 @@ export default function AdminPage() {
             <CardContent className="pt-6">
               <div className="text-center">
                 <Target className="w-10 h-10 mx-auto mb-2 text-green-600" />
-                <p className="text-3xl font-bold text-green-600">{avgScore.toLocaleString()}</p>
-                <p className="text-sm text-gray-600 font-medium">Điểm trung bình</p>
+                <p className="text-3xl font-bold text-green-600">
+                  {avgScore.toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-600 font-medium">
+                  Điểm trung bình
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -165,13 +190,11 @@ export default function AdminPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {loading ? (
-              <p className="text-center text-gray-600">Đang tải dữ liệu...</p>
-            ) : results.length > 0 ? (
+            {results.length > 0 ? (
               <div className="space-y-3">
                 {results.map((result, index) => {
-                  const rank = index + 1
-                  const score = Number(result.score)
+                  const rank = index + 1;
+                  const score = Number(result.score);
                   return (
                     <div
                       key={result.id}
@@ -196,25 +219,41 @@ export default function AdminPage() {
                             : "bg-purple-500 text-white"
                         }`}
                       >
-                        {rank <= 3 ? (rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉") : rank}
+                        {rank <= 3
+                          ? rank === 1
+                            ? "🥇"
+                            : rank === 2
+                            ? "🥈"
+                            : "🥉"
+                          : rank}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-lg truncate">{result.name}</p>
+                        <p className="font-bold text-lg truncate">
+                          {result.name}
+                        </p>
                         <div className="flex gap-4 text-sm text-gray-600">
                           <span>{score} điểm</span>
                           <span>•</span>
-                          <span>{new Date(result.createdAt).toLocaleTimeString("vi-VN")}</span>
+                          <span>
+                            {new Date(result.createdAt).toLocaleTimeString(
+                              "vi-VN"
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             ) : (
               <div className="text-center py-12">
                 <Users className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-xl font-semibold text-gray-600 mb-2">Chưa có kết quả nào</p>
-                <p className="text-gray-500">Kết quả sẽ hiển thị khi có người hoàn thành quiz</p>
+                <p className="text-xl font-semibold text-gray-600 mb-2">
+                  Chưa có kết quả nào
+                </p>
+                <p className="text-gray-500">
+                  Kết quả sẽ hiển thị khi có người hoàn thành quiz
+                </p>
               </div>
             )}
           </CardContent>
@@ -231,5 +270,5 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

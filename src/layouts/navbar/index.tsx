@@ -14,6 +14,7 @@ const navigation = [
   { name: "Tài liệu tham khảo", href: "/references" },
   { name: "Trò chơi trí nhớ", href: "/memory-game" },
   { name: "Trò chơi mốc thời gian", href: "/timeline-escape" },
+  { name: "Quiz", href: "/quiz-home" },
 ]
 
 const Navbar = () => {
