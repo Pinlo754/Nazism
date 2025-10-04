@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react" // 👈 Đã thêm useRef
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,43 +20,56 @@ export default function ResultsPage() {
   const [score, setScore] = useState<number>(0)
   const [correctCount, setCorrectCount] = useState<number>(0)
   const [totalTime, setTotalTime] = useState<number>(0)
+  
+  // 🎯 Dùng useRef để theo dõi trạng thái đã gửi kết quả
+  const hasPosted = useRef(false) 
 
   useEffect(() => {
-  const name = getCurrentPlayer() || "Anonymous"
-  const answers: PlayerAnswer[] = getPlayerAnswers() || []
-
-  const calculatedScore = calculateScore(answers)
-
-  setPlayerName(name)
-  setScore(calculatedScore)
-  setCorrectCount(answers.filter(a => a.isCorrect).length)
-  setTotalTime(answers.reduce((sum, a) => sum + a.timeSpent, 0))
-
-  const postResult = async () => {
-    try {
-      const body = {
-        name,
-        score: calculatedScore.toString(),
-        createdAt: new Date().toISOString()
-      }
-      console.log("Đang POST:", body)
-
-      const res = await fetch("https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      })
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-      const data = await res.json()
-      console.log("POST thành công:", data)
-    } catch (err) {
-      console.error("POST thất bại:", err)
+    // 🛑 KIỂM TRA: Nếu cờ là TRUE (đã gửi), thì thoát (chặn lần chạy thứ 2 của Strict Mode)
+    if (hasPosted.current) {
+      console.log("⚠️ (Strict Mode) Kết quả đã được POST trước đó, bỏ qua lần gọi này.")
+      return
     }
-  }
 
-  postResult()
-}, [])
+    const name = getCurrentPlayer() || "Anonymous"
+    const answers: PlayerAnswer[] = getPlayerAnswers() || []
+
+    const calculatedScore = calculateScore(answers)
+
+    setPlayerName(name)
+    setScore(calculatedScore)
+    setCorrectCount(answers.filter(a => a.isCorrect).length)
+    setTotalTime(answers.reduce((sum, a) => sum + a.timeSpent, 0))
+
+    const postResult = async () => {
+      try {
+        const body = {
+          name,
+          score: calculatedScore.toString(),
+          createdAt: new Date().toISOString()
+        }
+        console.log("➡️ Đang POST kết quả:", body)
+
+        const res = await fetch("https://68e0bd8f93207c4b47953af9.mockapi.io/api/v1/result", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        })
+
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+        const data = await res.json()
+        console.log("🎉 POST thành công:", data)
+      } catch (err) {
+        console.error("🔥 POST thất bại:", err)
+      }
+    }
+
+    // ✅ ĐẶT CỜ: Đánh dấu là đã gọi hàm POST
+    hasPosted.current = true
+    
+    // GỌI HÀM
+    postResult()
+  }, [])
 
 
   const handlePlayAgain = () => {
