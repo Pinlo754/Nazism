@@ -307,3 +307,26 @@ body::-webkit-scrollbar {
   color: white !important;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
 }
+
+/* Text shadow utility for better readability on images */
+.shadow-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Dialog overlay z-index fix for Leaflet maps */
+.dialog-overlay {
+  z-index: 9998 !important;
+}
+
+.dialog-content {
+  z-index: 9999 !important;
+}
+
+/* Leaflet map z-index management when dialog is open */
+body:has([data-state="open"]) .leaflet-container {
+  z-index: 1 !important;
+}
+
+body:has([data-state="open"]) .leaflet-control-container {
+  z-index: 2 !important;
+}

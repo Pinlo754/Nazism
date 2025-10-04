@@ -2,10 +2,12 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { useStatistics } from "@/lib/data-fetcher"
-import { AlertTriangle, MapPin, Camera, Quote, User } from "lucide-react"
+import { AlertTriangle, MapPin, Camera, Quote, User, X } from "lucide-react"
 import InteractiveCampsMap from "@/components/interactive-camps-map"
 import HolocaustGallery from "@/components/holocaust-gallery"
 import SurvivorAvatar from "@/components/survivor-avatar"
@@ -20,8 +22,30 @@ const fadeIn = {
   show: { opacity: 1 },
 }
 
+interface VictimGroup {
+  title: string
+  desc: string
+  note: string
+  image: string
+  detailDesc?: string
+  historicalContext?: string
+  timeline?: string[]
+}
+
 export default function AtrocitiesPageView() {
   const { data: statistics, isLoading } = useStatistics()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedGroup, setSelectedGroup] = useState<VictimGroup | null>(null)
+
+  const openGroupDialog = (group: VictimGroup) => {
+    setSelectedGroup(group)
+    setDialogOpen(true)
+  }
+
+  const closeDialog = () => {
+    setDialogOpen(false)
+    setSelectedGroup(null)
+  }
 
   return (
     <div className="min-h-screen">
@@ -39,9 +63,12 @@ export default function AtrocitiesPageView() {
         
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-black/60 z-10" />
+        
+        {/* Gradient fade overlay for smooth transition */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent z-20" />
            
         {/* Content Container */}
-        <div className="relative z-20 container mx-auto px-4 py-16 space-y-20">
+        <div className="relative z-30 container mx-auto px-4 py-16 space-y-20">
           {/* Hero */}
           <motion.section
             initial="hidden"
@@ -125,7 +152,7 @@ export default function AtrocitiesPageView() {
       </div>
 
       {/* Content Section - White Background */}
-      <div className="bg-background">
+      <div className="bg-background relative -mt-16 pt-20">
         <div className="container mx-auto px-4 py-16 space-y-20">
         <motion.section
           initial="hidden"
@@ -143,21 +170,61 @@ export default function AtrocitiesPageView() {
                 title: "Người Do Thái",
                 desc: 'Mục tiêu chính của "Giải pháp cuối cùng".',
                 note: "Khoảng 6 triệu người bị sát hại",
+                image: "/assets/Actrocities/nguoi_do_thai.jpg",
+                detailDesc: "Người Do Thái là mục tiêu chính của chính sách diệt chủng có hệ thống của Nazi. Cuộc Holocaust bắt đầu với các luật phân biệt chủng tộc từ năm 1933, sau đó leo thang thành cuộc diệt chủng có tổ chức từ năm 1941.",
+                historicalContext: "Chủ nghĩa bài Do Thái đã tồn tại ở châu Âu trong nhiều thế kỷ, nhưng Nazi đã biến nó thành chính sách nhà nước có hệ thống. Họ sử dụng khoa học giả mạo về chủng tộc để biện minh cho việc bức hại.",
+                timeline: [
+                  "1933: Luật loại trừ người Do Thái khỏi công việc",
+                  "1935: Luật Nuremberg tước quyền công dân",
+                  "1938: Đêm thủy tinh vỡ (Kristallnacht)",
+                  "1941: Bắt đầu 'Giải pháp cuối cùng'",
+                  "1942-1945: Diệt chủng có hệ thống tại các trại"
+                ]
               },
               {
                 title: "Người Roma và Sinti",
                 desc: "Cuộc diệt chủng Porajmos.",
                 note: "220,000 - 500,000 người",
+                image: "/assets/Actrocities/nguoi_roma_sinti.jpg",
+                detailDesc: "Người Roma và Sinti (thường bị gọi sai là 'Gypsy') là nạn nhân của cuộc diệt chủng được gọi là Porajmos. Họ bị Nazi coi là 'yếu tố phản xã hội' và phải chịu các chính sách diệt chủng tương tự như người Do Thái.",
+                historicalContext: "Cộng đồng Roma đã sống ở châu Âu hàng thế kỷ nhưng thường bị phân biệt đối xử. Nazi đã lợi dụng định kiến có sẵn này để thực hiện chính sách diệt chủng.",
+                timeline: [
+                  "1935: Luật Nuremberg áp dụng cho người Roma",
+                  "1938: Bắt đầu đăng ký và phân loại",
+                  "1940: Bắt đầu trục xuất khỏi Đức",
+                  "1941-1944: Diệt chủng tại các trại",
+                  "1944: Thanh lý trại Roma tại Auschwitz"
+                ]
               },
               {
                 title: "Người khuyết tật",
                 desc: 'Chương trình "Aktion T4".',
                 note: "Khoảng 275,000 người",
+                image: "/assets/Actrocities/nguoi_khuyet_tat.jpg",
+                detailDesc: "Chương trình Aktion T4 là chương trình 'an tử' có hệ thống nhằm vào người khuyết tật tâm thần và thể chất. Đây là tiền thân cho các phương pháp diệt chủng sau này được sử dụng trong Holocaust.",
+                historicalContext: "Chương trình này dựa trên ý tưởng về 'ưu sinh học' và 'cuộc sống không xứng đáng để sống'. Nó đã phát triển các kỹ thuật giết người hàng loạt bằng khí độc.",
+                timeline: [
+                  "1933: Luật triệt sản bắt buộc",
+                  "1939: Bắt đầu chương trình T4",
+                  "1940-1941: Đỉnh điểm của chương trình",
+                  "1941: Chính thức dừng do phản đối",
+                  "1942-1945: Tiếp tục bí mật"
+                ]
               },
               {
                 title: "Các nhóm khác",
                 desc: "Tù chính trị, Jehovah, đồng tính, thiểu số khác.",
                 note: "Hàng trăm nghìn người",
+                image: "/assets/Actrocities/nguoi_khac.jpg",
+                detailDesc: "Nazi còn nhắm mục tiêu vào nhiều nhóm khác bao gồm tù nhân chính trị, nhân chứng Jehovah, người đồng tính nam, người Slavic, và các nhóm thiểu số khác. Mỗi nhóm bị đánh dấu bằng các biểu tượng khác nhau trong trại.",
+                historicalContext: "Chế độ Nazi muốn tạo ra một xã hội 'thuần chủng' Đức và loại bỏ tất cả những ai họ coi là 'không mong muốn' hoặc 'nguy hiểm' cho ý thức hệ của họ.",
+                timeline: [
+                  "1933: Bắt giữ đối thủ chính trị đầu tiên",
+                  "1934: Đàn áp SA và các nhóm đối lập",
+                  "1935: Luật chống đồng tính",
+                  "1939: Bắt đầu bức hại người Slavic",
+                  "1943-1945: Diệt chủng các nhóm khác"
+                ]
               },
             ].map((g, i) => (
               <motion.div
@@ -165,15 +232,38 @@ export default function AtrocitiesPageView() {
                 variants={fadeUp}
                 transition={{ delay: i * 0.2 }}
               >
-                <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-slate-200">
-                  <CardHeader>
-                    <CardTitle className="text-lg">{g.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <Card 
+                  className="shadow-md hover:shadow-lg transition-shadow duration-300 border-slate-200 overflow-hidden cursor-pointer"
+                  onClick={() => openGroupDialog(g)}
+                >
+                  {/* Image Header */}
+                  <div className="relative h-48 w-full">
+                    <Image
+                      src={g.image}
+                      alt={g.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/nazism-hero.png"; // Fallback image
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute bottom-4 left-4">
+                      <h3 className="text-lg font-semibold text-white shadow-text">
+                        {g.title}
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  <CardContent className="p-6">
                     <p className="text-sm text-muted-foreground mb-3">
                       {g.desc}
                     </p>
-                    <p className="text-xs text-destructive">{g.note}</p>
+                    <p className="text-xs text-destructive font-medium bg-red-50 p-2 rounded">
+                      {g.note}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -365,6 +455,102 @@ export default function AtrocitiesPageView() {
       </motion.section>
         </div>
       </div>
+
+      {/* Victim Group Detail Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto dialog-content">
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-[-1] rounded-lg"></div>
+          <DialogHeader className="relative z-10">
+            <DialogTitle className="flex items-center gap-3">
+              <User className="h-5 w-5 text-primary" />
+              <span>{selectedGroup?.title}</span>
+            </DialogTitle>
+            <DialogClose
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 z-20"
+              onClick={closeDialog}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </DialogHeader>
+
+          {selectedGroup && (
+            <div className="mt-6 space-y-6 relative z-10">
+              {/* Main Image */}
+              <div className="relative h-64 md:h-80 rounded-lg overflow-hidden z-10">
+                <Image
+                  src={selectedGroup.image}
+                  alt={selectedGroup.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "/nazism-hero.png";
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute bottom-4 left-4">
+                  <h2 className="text-2xl font-bold text-white shadow-text">
+                    {selectedGroup.title}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="space-y-6 relative z-10">
+                {/* Statistics */}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-800 font-semibold text-center">
+                    {selectedGroup.note}
+                  </p>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">Mô tả chi tiết</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {selectedGroup.detailDesc}
+                  </p>
+                </div>
+
+                {/* Historical Context */}
+                {selectedGroup.historicalContext && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3">Bối cảnh lịch sử</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {selectedGroup.historicalContext}
+                    </p>
+                  </div>
+                )}
+
+                {/* Timeline */}
+                {selectedGroup.timeline && (
+                  <div>
+                    <h3 className="text-xl font-semibold mb-3">Dòng thời gian</h3>
+                    <div className="space-y-3">
+                      {selectedGroup.timeline.map((event, index) => (
+                        <div key={index} className="flex gap-3 items-start">
+                          <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-sm text-muted-foreground">{event}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Call to Action */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-blue-800 text-sm text-center">
+                    Những thông tin này nhắc nhở chúng ta về tầm quan trọng của việc ghi nhớ lịch sử 
+                    để không bao giờ để bi kịch tương tự tái diễn.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
