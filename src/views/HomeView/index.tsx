@@ -160,36 +160,70 @@ export default function HomePageView() {
         whileInView="show"
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="mt-24 pt-8 border-t border-border"
+        className="mt-24 pt-12 border-t border-border"
       >
-        <h2 className="text-2xl font-bold text-center mb-8">Đội ngũ phát triển</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            { name: 'Nguyễn Minh Quân', role: '' },
-            { name: 'Nguyễn Thanh Phong', role: '' },
-            { name: 'Trần Đức Phát', role: '' },
-            { name: 'Đàm Hải Hiện', role: '' },
-          ].map((member, i) => (
-            <motion.div
-              key={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="show"
-              transition={{ delay: i * 0.2 }}
-              viewport={{ once: true }}
-              className="p-4 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center text-2xl font-bold text-muted-foreground">
-                {member.name.split(' ').pop()?.[0]}
-              </div>
-              <h3 className="font-medium">{member.name}</h3>
-              <p className="text-sm text-muted-foreground">{member.role}</p>
-            </motion.div>
-          ))}
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-12">Đội ngũ phát triển</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {[
+              { 
+                name: 'Nguyễn Minh Quân', 
+                role: 'Phân tích & Phê phán',
+                description: 'Chuyên gia phân tích hệ tư tưởng và các khía cạnh triết học',
+                tools: ['Research', 'Analysis', 'Writing']
+              },
+              { 
+                name: 'Trần Đức Phát', 
+                role: 'Chuyên gia Lịch sử',
+                description: 'Nghiên cứu chuyên sâu về các sự kiện lịch sử và tội ác',
+                tools: ['Historical Research', 'Fact-Checking', 'Documentation']
+              },
+              { 
+                name: 'Nguyễn Thanh Phong', 
+                role: 'Thiết kế & Phát triển',
+                description: 'Thiết kế giao diện và trải nghiệm người dùng',
+                tools: ['UI/UX Design', 'Frontend', 'Next.js', 'Tailwind']
+              },
+              { 
+                name: 'Đàm Hải Hiện', 
+                role: 'Nghiên cứu Chủ nghĩa Quốc xã',
+                description: 'Chuyên gia về chủ nghĩa Quốc xã và hệ tư tưởng cực đoan',
+                tools: ['Research', 'Content', 'Analysis']
+              },
+            ].map((member, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="p-6 rounded-xl border border-border hover:border-primary/20 hover:shadow-lg transition-all bg-card/50"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center text-xl font-bold text-primary">
+                    {member.name.split(' ').pop()?.[0]}
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-semibold text-lg">{member.name}</h3>
+                    <p className="text-primary font-medium text-sm mb-2">{member.role}</p>
+                    <p className="text-sm text-muted-foreground mb-3">{member.description}</p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {member.tools.map((tool, idx) => (
+                        <span key={idx} className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <p className="text-center text-sm text-muted-foreground mt-12 pt-6 border-t border-border">
+            © {new Date().getFullYear()} Dự án nghiên cứu Chủ nghĩa Quốc xã. Tất cả quyền được bảo lưu.
+          </p>
         </div>
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          © {new Date().getFullYear()} Dự án nghiên cứu Chủ nghĩa Quốc xã
-        </p>
       </motion.footer>
     </div>
   )
