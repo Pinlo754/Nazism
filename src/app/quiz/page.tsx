@@ -6,29 +6,33 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import {
-  QUIZ_QUESTIONS,
+  getRandomQuestions,
   getCurrentPlayer,
   saveAnswer,
   getPlayerAnswers,
   saveResult,
   calculateScore,
   type PlayerAnswer,
-} from "../..//lib/quiz-data"
+} from "../../lib/quiz-data"
 import { Clock, CheckCircle2, XCircle } from "lucide-react"
 
 export default function QuizPage() {
   const router = useRouter()
+
+  // Tạo bộ câu hỏi ngẫu nhiên 20 câu khi bắt đầu
+  const [questions, setQuestions] = useState(() => getRandomQuestions(20))
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
-  const [timeLeft, setTimeLeft] = useState(QUIZ_QUESTIONS[0].timeLimit)
+  const [timeLeft, setTimeLeft] = useState(questions[0]?.timeLimit || 20)
   const [showResult, setShowResult] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [questionStartTime, setQuestionStartTime] = useState(Date.now())
 
-  const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex]
-  const progress = ((currentQuestionIndex + 1) / QUIZ_QUESTIONS.length) * 100
+  const currentQuestion = questions[currentQuestionIndex]
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100
 
-  // Kiểm tra player
+  // Kiểm tra người chơi có hợp lệ không
   useEffect(() => {
     const playerName = getCurrentPlayer()
     if (!playerName) {
@@ -36,7 +40,7 @@ export default function QuizPage() {
     }
   }, [router])
 
-  // Reset thời gian khi chuyển câu hỏi
+  // Reset thời gian, trạng thái khi sang câu mới
   useEffect(() => {
     setTimeLeft(currentQuestion.timeLimit)
     setQuestionStartTime(Date.now())
@@ -44,7 +48,7 @@ export default function QuizPage() {
     setShowResult(false)
   }, [currentQuestionIndex, currentQuestion.timeLimit])
 
-  // Xử lý timeout bằng useCallback
+  // Hàm xử lý hết giờ
   const handleTimeout = useCallback(() => {
     if (selectedAnswer === null) {
       const timeSpent = (Date.now() - questionStartTime) / 1000
@@ -61,7 +65,7 @@ export default function QuizPage() {
     }
   }, [selectedAnswer, questionStartTime, currentQuestion.id])
 
-  // Timer countdown
+  // Timer đếm ngược
   useEffect(() => {
     if (showResult) return
 
@@ -78,11 +82,13 @@ export default function QuizPage() {
     return () => clearInterval(timer)
   }, [showResult, currentQuestionIndex, handleTimeout])
 
+  // Chọn đáp án
   const handleAnswerSelect = (answerIndex: number) => {
     if (showResult) return
     setSelectedAnswer(answerIndex)
   }
 
+  // Nộp đáp án
   const handleSubmitAnswer = () => {
     if (selectedAnswer === null) return
 
@@ -102,11 +108,11 @@ export default function QuizPage() {
     setShowResult(true)
   }
 
+  // Sang câu tiếp theo hoặc lưu kết quả
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+    if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1)
     } else {
-      // Quiz hoàn tất
       const playerName = getCurrentPlayer()
       const answers = getPlayerAnswers()
       const totalScore = calculateScore(answers)
@@ -129,15 +135,15 @@ export default function QuizPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl space-y-6">
-        {/* Progress Bar */}
+        {/* Thanh tiến trình */}
         <div className="bg-white rounded-full p-2 shadow-lg">
           <Progress value={progress} className="h-3" />
           <p className="text-center mt-2 font-bold text-gray-700">
-            Câu {currentQuestionIndex + 1} / {QUIZ_QUESTIONS.length}
+            Câu {currentQuestionIndex + 1} / {questions.length}
           </p>
         </div>
 
-        {/* Question Card */}
+        {/* Thẻ câu hỏi */}
         <Card className="border-4 border-white shadow-2xl">
           <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-t-lg">
             <div className="flex items-center justify-between">
@@ -148,6 +154,7 @@ export default function QuizPage() {
               </div>
             </div>
           </CardHeader>
+
           <CardContent className="p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-8 text-balance">{currentQuestion.question}</h2>
 
@@ -163,8 +170,7 @@ export default function QuizPage() {
                     key={index}
                     onClick={() => handleAnswerSelect(index)}
                     disabled={showResult}
-                    className={`
-                      p-6 rounded-xl text-left text-lg font-semibold transition-all
+                    className={`p-6 rounded-xl text-left text-lg font-semibold transition-all
                       border-4 hover:scale-[1.02] active:scale-[0.98]
                       ${
                         showCorrect
@@ -188,7 +194,7 @@ export default function QuizPage() {
               })}
             </div>
 
-            {/* Action Buttons */}
+            {/* Nút hành động */}
             <div className="mt-8 flex gap-4">
               {!showResult ? (
                 <Button
@@ -205,12 +211,12 @@ export default function QuizPage() {
                   size="lg"
                   className="w-full h-14 text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
                 >
-                  {currentQuestionIndex < QUIZ_QUESTIONS.length - 1 ? "Câu Tiếp Theo" : "Xem Kết Quả"}
+                  {currentQuestionIndex < questions.length - 1 ? "Câu Tiếp Theo" : "Xem Kết Quả"}
                 </Button>
               )}
             </div>
 
-            {/* Result Message */}
+            {/* Thông báo kết quả */}
             {showResult && (
               <div
                 className={`mt-6 p-4 rounded-lg text-center font-bold text-lg ${
