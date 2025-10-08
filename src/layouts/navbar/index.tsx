@@ -10,7 +10,7 @@ const navigation = [
   { name: "Chủ nghĩa Quốc xã là gì?", href: "/what-is-nazism" },
   { name: "Lịch sử", href: "/history" },
   { name: "Tội ác & Hậu quả", href: "/atrocities" },
-  { name: "Phân tích & Phê phán", href: "/Analysis" },
+  { name: "Phân tích & Phê phán", href: "/analysis" },
   { name: "Tài liệu tham khảo", href: "/references" },
   { name: "Trò chơi trí nhớ", href: "/memory-game" },
   { name: "Trò chơi mốc thời gian", href: "/timeline-escape" },
