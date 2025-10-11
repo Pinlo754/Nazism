@@ -225,6 +225,47 @@ export default function HomePageView() {
           </p>
         </div>
       </motion.footer>
+
+      {/* Tools Used */}
+      <motion.section
+        variants={fadeIn}
+        initial="hidden"
+        whileInView="show"
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="mt-24 pt-12 border-t border-border"
+      >
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-8">Công cụ sử dụng</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {[
+              { name: 'Next.js', description: 'React framework for server-rendered applications' },
+              { name: 'React', description: 'JavaScript library for building user interfaces' },
+              { name: 'TypeScript', description: 'Typed JavaScript for better development' },
+              { name: 'Tailwind CSS', description: 'Utility-first CSS framework' },
+              { name: 'Shadcn/ui', description: 'Beautifully designed components' },
+              { name: 'Cursor', description: 'AI coding assistant for development' },
+              { name: 'ChatGPT', description: 'AI language model for content and code assistance' },
+              { name: 'Lucide Icons', description: 'Beautiful & consistent icon toolkit' },
+              { name: 'Framer Motion', description: 'Animation library for React' },
+              { name: 'Vercel', description: 'Cloud platform for deployment' },
+            ].map((tool, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-card p-6 rounded-lg border border-border hover:shadow-md transition-shadow"
+              >
+                <h3 className="font-semibold text-lg mb-2">{tool.name}</h3>
+                <p className="text-sm text-muted-foreground">{tool.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
     </div>
   )
 }
